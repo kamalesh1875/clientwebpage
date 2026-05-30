@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./Home.css";
 
 const contactApiUrl =
-  import.meta.env.VITE_CONTACT_API_URL || "http://localhost:5000/api/contact";
+  import.meta.env.VITE_CONTACT_API_URL || "https://clientwebpage.onrender.com/api/contact";
 import Navbar from "../Navbar/Navbar.jsx";
 
 const services = [
@@ -80,7 +80,13 @@ function Home() {
         body: JSON.stringify(formData),
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const result = contentType.includes("application/json")
+        ? await response.json()
+        : {
+            message:
+              "Contact API returned a webpage instead of JSON. Check VITE_CONTACT_API_URL and backend deployment.",
+          };
 
       if (!response.ok) {
         throw new Error(result.message || "Unable to send enquiry.");
