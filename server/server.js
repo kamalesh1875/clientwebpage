@@ -35,7 +35,17 @@ app.use(
 app.use(express.json());
 
 app.get("/api/health", (request, response) => {
-  response.json({ status: "ok" });
+  response.json({
+    status: "ok",
+    allowedOrigins,
+    emailConfig: {
+      host: Boolean(process.env.SMTP_HOST),
+      user: Boolean(process.env.SMTP_USER),
+      pass: Boolean(process.env.SMTP_PASS),
+      from: Boolean(process.env.SMTP_FROM),
+      businessEmail: Boolean(process.env.BUSINESS_EMAIL),
+    },
+  });
 });
 
 app.post("/api/contact", async (request, response) => {
@@ -113,4 +123,5 @@ app.post("/api/contact", async (request, response) => {
 
 app.listen(port, () => {
   console.log(`Contact server running on http://localhost:${port}`);
+  console.log(`Allowed frontend origins: ${allowedOrigins.join(", ")}`);
 });
